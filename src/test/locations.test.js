@@ -3,8 +3,9 @@ import chai from 'chai';
 import request from 'supertest';
 import app from '../index';
 import { defaultRoute, addLocationMessage, noLocationsFound, updateLocationMessage, deleteLocationMessage } from '../utils';
-import DB from '../db';
-import { Location } from '../models';
+import LocationRepository from '../repositories/LocationRepository';
+
+const locationDB = new LocationRepository();
 
 const { expect } = chai;
 
@@ -12,10 +13,10 @@ let savedLocation;
 
 describe('Population manager API', () => {
   before(async () => {
-    await DB.deleteMany(Location, {});
+    await locationDB.deleteMany({});
   });
 
-  it('should add a location', (done) => {
+  it('should not add a location if any required value is missing', (done) => {
     request(app)
       .post(`${defaultRoute}/locations`)
       .send({
