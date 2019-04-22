@@ -6,6 +6,7 @@ import {
 } from '../utils';
 import { logger } from '..';
 
+/* istanbul ignore next */
 const dbConnection = () => {
   mongoose.connect(connectionString, {
     useNewUrlParser: true,

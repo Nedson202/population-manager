@@ -36,7 +36,7 @@ app.get('/', (_, res) => {
   res.json({ message: welcomeMessage });
 });
 
-app.use('*', (_, res) => res.status(404).json({
+app.use('*', (_, res) => res.status(404).json({ /* istanbul ignore next */
   message: `Welcome! Check the documentation ${readMeLink} for valid routes`,
 }));
 
@@ -44,7 +44,8 @@ process.on(unhandledRejection, (reason) => { /* istanbul ignore next */
   stackLogger(reason);
 });
 
-process.on(uncaughtException, (reason) => { /* istanbul ignore next */
+/* istanbul ignore next */
+process.on(uncaughtException, (reason) => {
   stackLogger(reason);
   process.exit(exitZero);
 });
