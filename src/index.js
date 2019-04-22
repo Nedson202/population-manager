@@ -1,30 +1,25 @@
 import express from 'express';
 import cors from 'cors';
 import requestLogger from 'morgan';
-import mongoose from 'mongoose';
 import { createLogger, stackLogger } from 'info-logger';
 import expressValidator from 'express-validator';
 
 import routes from './routes';
 import {
   appUrl, port, defaultRoute,
-  readMeLink, connectionString, connectionMessage, unhandledRejection,
-  uncaughtException, sigterm, exitZero
+  readMeLink, unhandledRejection, welcomeMessage,
+  uncaughtException, exitZero, logFolderName, logFileName, logType,
+  connection
 } from './utils';
+import dbConnection from './loaders/databaseConnection';
 
-export const logger = createLogger('Error', 'log-info');
+export const logger = createLogger(logFolderName, logFileName);
 
 const app = express();
 
-mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useFindAndModify: false
-}, () => {
-  logger.info(connectionMessage);
-});
+dbConnection();
 
-app.use(requestLogger('dev'));
+app.use(requestLogger(logType));
 app.use(cors());
 app.use(expressValidator());
 
@@ -33,12 +28,12 @@ app.use(express.urlencoded({ extended: false }));
 app.use(defaultRoute, routes);
 
 app.listen(port, () => {
-  logger.info(`Server started on port: ${port}`);
-  logger.info(appUrl);
+  logger.info(connection(`Server started on port: ${port}`));
+  logger.info(connection(appUrl));
 });
 
 app.get('/', (_, res) => {
-  res.json({ message: 'Welcome to Population Management Api!' });
+  res.json({ message: welcomeMessage });
 });
 
 app.use('*', (_, res) => res.status(404).json({
@@ -51,11 +46,6 @@ process.on(unhandledRejection, (reason) => { /* istanbul ignore next */
 
 process.on(uncaughtException, (reason) => { /* istanbul ignore next */
   stackLogger(reason);
-  process.exit(exitZero);
-});
-
-process.on(sigterm, () => { /* istanbul ignore next */
-  mongoose.connection.close();
   process.exit(exitZero);
 });
 
