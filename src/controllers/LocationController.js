@@ -1,13 +1,11 @@
-import { Location } from '../models';
-import DB from '../db';
+import LocationRepository from '../repositories/LocationRepository';
 import {
   deleteLocationMessage, addLocationMessage,
-  updateLocationMessage,
-  updateReturnOptions,
-  defaultLimit,
-  defaultPage,
-  noLocationsFound
+  updateLocationMessage, updateReturnOptions,
+  defaultLimit, defaultPage, noLocationsFound
 } from '../utils';
+
+const locationDB = new LocationRepository();
 
 /**
  * Controller to manage contact related data like contact creation, login
@@ -33,7 +31,7 @@ class LocationController {
         maleCount: Number(maleCount),
         femaleCount: Number(femaleCount),
       };
-      const location = await DB.create(Location, data);
+      const location = await locationDB.create(data);
       return res.status(201).json({
         error: false,
         message: addLocationMessage,
@@ -57,7 +55,7 @@ class LocationController {
     try {
       const { limit = defaultLimit, page = defaultPage } = req.query;
       const retrieveOptions = { limit: Number(limit), page: Number(page) };
-      const locations = await DB.paginateAll(Location, null, retrieveOptions);
+      const locations = await locationDB.paginateAll(null, retrieveOptions);
 
       if (!locations.docs.length) {
         return res.status(404).json({
@@ -107,7 +105,7 @@ class LocationController {
       };
 
       const updatedLocation = await
-      DB.updateOne(Location, query, updateObject, updateReturnOptions);
+      locationDB.updateOne(query, updateObject, updateReturnOptions);
 
       return res.status(200).json({
         error: false,
@@ -132,7 +130,7 @@ class LocationController {
   static async deleteLocation(req, res, next) {
     try {
       const { location } = req;
-      await DB.deleteMany(Location, location);
+      await locationDB.deleteMany(location);
       return res.status(200).json({
         error: false,
         message: deleteLocationMessage

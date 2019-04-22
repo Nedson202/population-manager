@@ -17,8 +17,8 @@ const LocationSchema = new Schema({
   femaleCount: {
     type: Number,
     trim: true,
-    min: 1,
     required: true,
+    min: 1,
   },
   totalResidents: {
     type: Number,
