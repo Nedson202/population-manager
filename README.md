@@ -1,6 +1,9 @@
 # Population Manager
 The Population Management System contains a list of locations and the total number of residents in each location broken down by gender.
 
+# Hosted API
+https://population-manager-api.herokuapp.com/api/v1/
+
 
 # Requirements
 * Node.js v10.x or higher
